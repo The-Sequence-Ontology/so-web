@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "ontologyIri": "http://purl.obolibrary.org/obo/so.owl",
+    "versionIri": "http://purl.obolibrary.org/obo/so/2024-11-18/so.owl",
+    "date": "18:11:2024 23:05"
+  },
+  "termCount": 2650,
+  "payloadTemplate": "terms/{SO_ID}.json"
+}
