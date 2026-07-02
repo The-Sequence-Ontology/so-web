@@ -245,6 +245,86 @@ th {
   margin: 0;
 }
 
+.graph-controls {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.graph-control-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.graph-controls button,
+.graph-controls select {
+  min-height: 2.75rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.graph-controls button {
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+.graph-controls button:hover:not(:disabled) {
+  border-color: var(--brand);
+  color: var(--brand-strong);
+}
+
+.graph-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.graph-expansion label {
+  display: grid;
+  gap: 0.3rem;
+  min-width: min(100%, 25rem);
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.graph-expansion select {
+  width: 100%;
+  padding: 0.45rem 2rem 0.45rem 0.65rem;
+}
+
+.graph-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.graph-filters legend {
+  width: 100%;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
+.graph-filters label {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.graph-status {
+  margin: 0;
+}
+
 .dag-figure figcaption {
   margin-top: 0.8rem;
   color: var(--muted);
@@ -253,10 +333,21 @@ th {
 .dag-svg {
   width: 100%;
   height: auto;
+  max-height: 46rem;
   display: block;
   border-radius: 18px;
   border: 1px solid var(--border);
   background: linear-gradient(180deg, #fcfbf8, #f3efe6);
+}
+
+.interactive-dag {
+  min-height: 22rem;
+  cursor: grab;
+  touch-action: none;
+}
+
+.interactive-dag.is-panning {
+  cursor: grabbing;
 }
 
 .dag-node rect {
@@ -278,9 +369,47 @@ th {
   stroke: #003e4f;
 }
 
+.interactive-node {
+  transition: opacity 140ms ease;
+}
+
+.interactive-node rect {
+  transition: fill 140ms ease, stroke-width 140ms ease;
+}
+
+.interactive-node:hover rect,
+.interactive-node:focus rect,
+.interactive-node.is-highlighted rect {
+  fill: #fff3dc;
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.interactive-node.is-selected rect {
+  stroke-width: 3;
+}
+
+.interactive-node.is-dimmed,
+.interactive-edge.is-dimmed {
+  opacity: 0.2;
+}
+
 .dag-edge {
   stroke: #4f646f;
   stroke-width: 1.7;
+}
+
+.interactive-edge {
+  transition: opacity 140ms ease, stroke-width 140ms ease;
+}
+
+.interactive-edge.is-highlighted {
+  stroke: var(--accent);
+  stroke-width: 2.6;
+}
+
+.graph-arrow {
+  fill: #4f646f;
 }
 
 .muted {
