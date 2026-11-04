@@ -1,0 +1,13 @@
+<section class="card">
+  <h3>Change history</h3>
+  <p class="muted">This timeline is a best-effort semantic reconstruction from Git-era ontology revisions. It captures detected changes to labels, definitions, parents, synonyms, subsets, obsoletion state, and related stanza content.</p>
+  {% if term.history.semanticEvents.length %}
+  <div class="table-wrap"><table><thead><tr><th scope="col">Date</th><th scope="col">Change</th><th scope="col">Summary</th><th scope="col">Evidence</th></tr></thead><tbody>
+    {% for event in term.history.semanticEvents %}
+    <tr><td>{{ event.date }}</td><td>{{ event.type | historyType }}</td><td>{{ event.summary }}{% if event.details.length %}<div class="muted">{% for detail in event.details %}{{ detail }}{% if not loop.last %}<br />{% endif %}{% endfor %}</div>{% endif %}</td><td><code>{{ event.shortHash }}</code>{% if event.issueRefs.length %}<br />{{ event.issueRefs | join(", ") }}{% endif %}</td></tr>
+    {% endfor %}
+  </tbody></table></div>
+  {% else %}
+  <p class="muted">No semantic history events were extracted for this term from the current Git-era editable ontology history.</p>
+  {% endif %}
+</section>

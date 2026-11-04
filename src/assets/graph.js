@@ -516,6 +516,11 @@ function bindGraphInteractions(state) {
   );
 }
 
+function termPayloadUrl(id, directory) {
+  // Prefix the relative filename so an SO: identifier is not a URL scheme.
+  return new URL("./" + id + ".json", directory);
+}
+
 async function expandSelected(state) {
   const id = state.selectedId;
   if (!id || state.expandedIds.has(id)) return;
@@ -523,7 +528,7 @@ async function expandSelected(state) {
   state.controls.status.textContent = `Loading the neighborhood for ${id}…`;
 
   try {
-    const response = await fetch(new URL(`${id}.json`, state.payloadDirectory));
+    const response = await fetch(termPayloadUrl(id, state.payloadDirectory));
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const addition = await response.json();
     state.payload = mergePayloads(state.payload, addition);
@@ -599,4 +604,4 @@ if (typeof document !== "undefined") {
   }
 }
 
-export { buildLayout, mergePayloads };
+export { buildLayout, mergePayloads, termPayloadUrl };

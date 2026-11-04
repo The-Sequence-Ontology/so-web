@@ -1,0 +1,15 @@
+---
+layout: layouts/base.njk
+permalink: /browser/current_release/index.html
+title: Current Release Browse
+---
+<p class="breadcrumbs"><a href="{{ '/index.html' | href(page.url) }}">Home</a> / Current release</p>
+<section class="card">
+  <h2>Browse the current release</h2>
+  <p class="lede">This entry page links into representative top-level terms from the current release. Search remains the fastest path for most users.</p>
+  <ul class="link-list">
+    {% for term in ontology.topLevelTerms %}
+    <li><a href="{{ term.canonicalUrl | href(page.url) }}">{{ term.id }} - {{ term.label }}</a></li>
+    {% endfor %}
+  </ul>
+</section>

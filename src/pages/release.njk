@@ -1,0 +1,23 @@
+---
+layout: layouts/base.njk
+permalink: /browser/current_release/release/index.html
+title: Release Metadata
+---
+<p class="breadcrumbs"><a href="{{ '/index.html' | href(page.url) }}">Home</a> / Release</p>
+<section class="card">
+  <h2>Current release metadata</h2>
+  <div class="table-wrap">
+    <table>
+      <tbody>
+        <tr><th scope="row">Ontology IRI</th><td>{{ ontology.metadata.ontologyIri or "Unavailable" }}</td></tr>
+        <tr><th scope="row">Version IRI</th><td>{{ ontology.metadata.versionIri or "Unavailable" }}</td></tr>
+        <tr><th scope="row">Release date</th><td>{{ ontology.metadata.releaseDate or "Unavailable" }}</td></tr>
+        <tr><th scope="row">Saved by</th><td>{{ ontology.metadata.savedBy or "Unavailable" }}</td></tr>
+        <tr><th scope="row">Default namespace</th><td>{{ ontology.metadata.defaultNamespace or "Unavailable" }}</td></tr>
+        <tr><th scope="row">Classes</th><td>{{ ontology.metrics["NUMBER_OF_CLASSES.INCLUDE_IMPORT_CLOSURE=false"] or "Unavailable" }}</td></tr>
+        <tr><th scope="row">Non-deprecated classes</th><td>{{ ontology.metrics["NUMBER_OF_NON_DEPRECATED_CLASSES.INCLUDE_IMPORT_CLOSURE=false"] or "Unavailable" }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><a href="{{ '/downloads/so.owl' | href(page.url) }}">OWL source</a>, <a href="{{ '/downloads/so.json' | href(page.url) }}">JSON graph export</a>, and <a href="{{ '/downloads/so-metadata.txt' | href(page.url) }}">release metrics</a> are copied into the built prototype.</p>
+</section>

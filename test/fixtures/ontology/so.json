@@ -1,0 +1,12 @@
+{
+  "graphs": [{
+    "nodes": [],
+    "edges": [
+      { "sub": "http://purl.obolibrary.org/obo/SO_0000704", "obj": "http://purl.obolibrary.org/obo/SO_0000110", "pred": "is_a" },
+      { "sub": "http://purl.obolibrary.org/obo/SO_0000001", "obj": "http://purl.obolibrary.org/obo/SO_0000704", "pred": "is_a" },
+      { "sub": "http://purl.obolibrary.org/obo/SO_0000001", "obj": "http://purl.obolibrary.org/obo/SO_0000110", "pred": "is_a" },
+      { "sub": "http://purl.obolibrary.org/obo/SO_0000704", "obj": "http://purl.obolibrary.org/obo/SO_0000110", "pred": "part_of" },
+      { "sub": "http://purl.obolibrary.org/obo/SO_0000001", "obj": "http://purl.obolibrary.org/obo/SO_0000704", "pred": "derives_from" }
+    ]
+  }]
+}

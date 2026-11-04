@@ -1,0 +1,56 @@
+---
+layout: layouts/base.njk
+---
+<p class="breadcrumbs"><a href="{{ '/index.html' | href(page.url) }}">Home</a> / <a href="{{ '/browser/current_release/index.html' | href(page.url) }}">Current release</a> / {{ term.id }}</p>
+<article class="grid">
+  <section class="card">
+    <div class="term-header">
+      <div>
+        <p class="kicker">Term Record</p>
+        <h2>{{ term.label or term.id }}</h2>
+        <p class="term-id">{{ term.id }}</p>
+      </div>
+      <div>
+        <span class="pill">{{ term.namespace or "sequence" }}</span>
+        {% if term.isObsolete %}<span class="pill obsolete">Obsolete term</span>{% endif %}
+      </div>
+    </div>
+    <p class="lede">{{ term.definition.text or "No definition available in the current release." }}</p>
+    {% if term.definition.xrefs.length %}<p><strong>Definition xrefs:</strong> {{ term.definition.xrefs | join(", ") }}</p>{% endif %}
+    {% if term.comments.length %}
+    <div><h3>Comments</h3>{% for comment in term.comments %}<p>{{ comment }}</p>{% endfor %}</div>
+    {% endif %}
+    {% if term.isObsolete %}
+    <p><strong>Status:</strong> This term is marked obsolete in the current release.{% if term.replacements.length %} Replacement guidance: {% for replacement in term.replacements %}<a href="{{ replacement.url | href(page.url) }}">{{ replacement.id }}</a>{% if not loop.last %}, {% endif %}{% endfor %}.{% endif %}</p>
+    {% endif %}
+  </section>
+  <section class="grid two">
+    <section class="card">
+      <h3>Synonyms</h3>
+      {% if term.synonyms.length %}
+      <table><thead><tr><th scope="col">Scope</th><th scope="col">Value</th></tr></thead><tbody>{% for synonym in term.synonyms %}<tr><td>{{ synonym.scope }}</td><td>{{ synonym.value }}</td></tr>{% endfor %}</tbody></table>
+      {% else %}
+      <p class="muted">No synonyms recorded in the OWL annotations.</p>
+      {% endif %}
+    </section>
+    <section class="card">
+      <h3>Identifiers and subsets</h3>
+      <p><strong>Compact form:</strong> {{ term.compactId }}</p>
+      <p><strong>IRI:</strong> <a href="{{ term.iri }}">{{ term.iri }}</a></p>
+      <p><strong>Alternate IDs:</strong> {{ term.altIds | join(", ") if term.altIds.length else "None" }}</p>
+      <p><strong>Subsets:</strong> {{ term.subsets | join(", ") if term.subsets.length else "None" }}</p>
+      <p><strong>Cross references:</strong> {{ term.xrefs | join(", ") if term.xrefs.length else "None" }}</p>
+    </section>
+    <section class="card">
+      <h3>History summary</h3>
+      <p class="muted">Best-effort semantic history is reconstructed from the Git-era editable ontology file by comparing term stanzas across revisions. This will miss earlier SVN-era changes until that history is added.</p>
+      <p><strong>First seen in Git-era editable history:</strong> {% if term.history.firstSeen %}{{ term.history.firstSeen.date }} in commit {{ term.history.firstSeen.shortHash }}{% else %}No stanza history found in so-edit.obo{% endif %}</p>
+      <p><strong>Most recent Git-era change:</strong> {% if term.history.mostRecent %}{{ term.history.mostRecent.date }} in commit {{ term.history.mostRecent.shortHash }}{% else %}No recorded changes{% endif %}</p>
+      <p><strong>Extracted semantic events:</strong> {{ term.history.semanticEvents.length }}</p>
+    </section>
+  </section>
+  {% include "term/relationships.njk" %}
+  {% include "term/graph.njk" %}
+  {% include "term/history.njk" %}
+</article>
+<script src="{{ '/assets/graph.js' | href(page.url) }}" type="module"></script>

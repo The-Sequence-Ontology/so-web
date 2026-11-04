@@ -1,0 +1,6 @@
+{
+  "name": "Sequence Ontology Browser",
+  "kicker": "Sequence Ontology Prototype",
+  "description": "Prototype website generated from the current OWL release for term content and the JSON graph export for local ontology navigation.",
+  "featuredTermIds": ["SO:0000110", "SO:0000400", "SO:0000704", "SO:0001411"]
+}

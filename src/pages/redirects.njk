@@ -1,0 +1,10 @@
+---
+layout: false
+pagination:
+  data: ontology.aliases
+  size: 1
+  alias: redirect
+permalink: "/browser/current_release/term/{{ redirect.alias }}/index.html"
+eleventyExcludeFromCollections: true
+---
+<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url={{ redirect.url | href(page.url) }}"><title>Redirecting</title><p>Redirecting to <a href="{{ redirect.url | href(page.url) }}">{{ redirect.id }}</a>.</p>

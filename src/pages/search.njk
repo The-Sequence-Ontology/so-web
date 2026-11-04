@@ -1,0 +1,16 @@
+---
+layout: layouts/base.njk
+permalink: /browser/current_release/search/index.html
+title: Search the Sequence Ontology
+---
+<p class="breadcrumbs"><a href="{{ '/index.html' | href(page.url) }}">Home</a> / Search</p>
+<section class="card">
+  <h2>Search the ontology</h2>
+  <label class="visually-hidden" for="ontology-search">Search for a Sequence Ontology term</label>
+  <div class="search-box">
+    <input id="ontology-search" type="search" data-search-input placeholder="Search by SO ID, label, synonym, or alternate ID" />
+  </div>
+  <p id="search-summary" data-search-summary class="muted">Enter a Sequence Ontology term ID, label, or synonym.</p>
+  <ul data-search-results class="search-results" aria-live="polite"></ul>
+</section>
+<script src="{{ '/assets/search.js' | href(page.url) }}" type="module"></script>

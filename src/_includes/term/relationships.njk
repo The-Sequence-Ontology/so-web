@@ -1,0 +1,29 @@
+{% macro relationList(items) %}
+  {% if items.length %}
+  <ul class="link-list">{% for target in items %}<li><a href="{{ target.url | href(page.url) }}">{{ target.id }} - {{ target.label }}</a></li>{% endfor %}</ul>
+  {% else %}
+  <p class="muted">None recorded in the current release neighborhood.</p>
+  {% endif %}
+{% endmacro %}
+<section class="card">
+  <h3>Relationships</h3>
+  <p class="muted">Text relationships are provided alongside the graph so the page remains understandable without visual interpretation.</p>
+  <div class="relationship-grid">
+    <section><h4>Parents</h4>{{ relationList(term.parentTerms) }}</section>
+    <section><h4>Children</h4>{{ relationList(term.childTerms) }}</section>
+  </div>
+  {% if term.outgoingGroups.length %}
+  <div class="relationship-grid">
+    {% for group in term.outgoingGroups %}
+    <section><h4>{{ group.predicate }} (outgoing)</h4>{{ relationList(group.targets) }}</section>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if term.incomingGroups.length %}
+  <div class="relationship-grid">
+    {% for group in term.incomingGroups %}
+    <section><h4>{{ group.predicate }} (incoming)</h4>{{ relationList(group.targets) }}</section>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>

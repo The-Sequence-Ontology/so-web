@@ -1,0 +1,7 @@
+---
+layout: layouts/base.njk
+---
+<p class="breadcrumbs"><a href="{{ '/index.html' | href(page.url) }}">Home</a> / {{ breadcrumb }}</p>
+<section class="card">
+  {{ content | safe }}
+</section>

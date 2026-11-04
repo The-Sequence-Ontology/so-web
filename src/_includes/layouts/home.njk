@@ -1,0 +1,34 @@
+---
+layout: layouts/base.njk
+---
+<section class="card">
+  <p class="kicker">{{ kicker }}</p>
+  <h2>{{ heading }}</h2>
+  <p class="lede">{{ introduction }}</p>
+  <div class="search-box">
+    {% for action in actions %}
+    <a class="button" href="{{ action.url | href(page.url) }}">{{ action.label }}</a>
+    {% endfor %}
+  </div>
+</section>
+<section class="grid two" aria-label="Highlights">
+  <article class="card">
+    <h2>{{ snapshotHeading }}</h2>
+    <p><strong>Ontology IRI:</strong> {{ ontology.metadata.ontologyIri or "Unavailable" }}</p>
+    <p><strong>Version IRI:</strong> {{ ontology.metadata.versionIri or "Unavailable" }}</p>
+    <p><strong>Release date:</strong> {{ ontology.metadata.releaseDate or "Unavailable" }}</p>
+    <p><strong>Classes:</strong> {{ ontology.metrics["NUMBER_OF_CLASSES.INCLUDE_IMPORT_CLOSURE=false"] or "Unavailable" }}</p>
+  </article>
+  <article class="card">
+    <h2>{{ prioritiesHeading }}</h2>
+    {{ content | safe }}
+  </article>
+</section>
+<section class="card">
+  <h2>{{ entriesHeading }}</h2>
+  <ul class="link-list">
+    {% for term in site.featuredTermIds | featuredTerms(ontology.terms) %}
+    <li><a href="{{ term.canonicalUrl | href(page.url) }}">{{ term.id }} - {{ term.label }}</a></li>
+    {% endfor %}
+  </ul>
+</section>

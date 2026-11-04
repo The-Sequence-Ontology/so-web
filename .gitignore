@@ -1,8 +1,5 @@
-context/
-site/.cache/
-site/dist/
-site/dist-history/
-site/dist-semantic/
-site/dist-semantic-clean/
-site/dist-*/
 node_modules/
+.cache/
+dist/
+dist-*/
+.DS_Store

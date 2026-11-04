@@ -1,12 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildLayout, mergePayloads } from "../src/assets/graph.js";
+import { buildLayout, mergePayloads, termPayloadUrl } from "../src/assets/graph.js";
 
 const release = {
   ontologyIri: "https://example.org/so.owl",
   versionIri: "https://example.org/so/2026-07-02/so.owl",
   date: "2026-07-02"
 };
+
+test("graph expansion fetches colon-containing term IDs as relative JSON files", () => {
+  const url = termPayloadUrl("SO:0000704", new URL("https://example.org/assets/terms/"));
+  assert.equal(url.href, "https://example.org/assets/terms/SO:0000704.json");
+  assert.equal(url.protocol, "https:");
+});
 
 function node(id, label, roles) {
   return {

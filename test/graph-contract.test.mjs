@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { buildGraphData, buildNormalizedTerms } from "../lib/ontology.mjs";
-import { buildTermPayload } from "../lib/pages.mjs";
+import { buildTermPayload } from "../lib/graph-payload.mjs";
 
 const iri = (id) => `http://purl.obolibrary.org/obo/${id.replace(":", "_")}`;
 

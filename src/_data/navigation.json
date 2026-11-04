@@ -1,0 +1,7 @@
+[
+  { "label": "Home", "url": "/index.html" },
+  { "label": "Browse", "url": "/browser/current_release/" },
+  { "label": "Search", "url": "/browser/current_release/search/" },
+  { "label": "Release", "url": "/browser/current_release/release/" },
+  { "label": "About", "url": "/browser/current_release/about/" }
+]

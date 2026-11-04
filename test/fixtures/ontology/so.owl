@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:obo="http://purl.obolibrary.org/obo/" xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#">
+  <owl:Ontology rdf:about="https://example.org/so.owl">
+    <owl:versionIRI rdf:resource="https://example.org/so/2026-11-03/so.owl"/>
+    <oboInOwl:date>2026-11-03</oboInOwl:date>
+    <oboInOwl:saved-by>Fixture</oboInOwl:saved-by>
+    <oboInOwl:default-namespace>sequence</oboInOwl:default-namespace>
+  </owl:Ontology>
+  <owl:Class rdf:about="http://purl.obolibrary.org/obo/SO_0000110">
+    <oboInOwl:id>SO:0000110</oboInOwl:id>
+    <rdfs:label>sequence_feature</rdfs:label>
+    <obo:IAO_0000115>A root feature.</obo:IAO_0000115>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.obolibrary.org/obo/SO_0000704">
+    <oboInOwl:id>SO:0000704</oboInOwl:id>
+    <rdfs:label>gene &lt;test&gt; &amp; &quot;quoted&quot;</rdfs:label>
+    <obo:IAO_0000115>A gene with &lt;script&gt;unsafe&lt;/script&gt; text &amp; quotes.</obo:IAO_0000115>
+    <oboInOwl:hasExactSynonym>genetic &amp; feature</oboInOwl:hasExactSynonym>
+    <oboInOwl:hasAlternativeId>SO:9999999</oboInOwl:hasAlternativeId>
+    <oboInOwl:hasAlternativeId>SO:0000003</oboInOwl:hasAlternativeId>
+    <oboInOwl:hasDbXref>Example:1</oboInOwl:hasDbXref>
+    <oboInOwl:inSubset rdf:resource="https://example.org/so#example_subset"/>
+    <rdfs:comment>A fixture comment.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.obolibrary.org/obo/SO_0000001">
+    <oboInOwl:id>SO:0000001</oboInOwl:id>
+    <rdfs:label>child_feature_with_a_long_label_for_wrapping</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.obolibrary.org/obo/SO_0000002">
+    <oboInOwl:id>SO:0000002</oboInOwl:id>
+    <rdfs:label>obsolete_feature</rdfs:label>
+    <owl:deprecated>true</owl:deprecated>
+    <obo:IAO_0100001 rdf:resource="http://purl.obolibrary.org/obo/SO_0000704"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://purl.obolibrary.org/obo/SO_0000003">
+    <oboInOwl:id>SO:0000003</oboInOwl:id>
+    <rdfs:label>historical_alias</rdfs:label>
+  </owl:Class>
+</rdf:RDF>
