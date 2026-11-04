@@ -6,56 +6,6 @@ const ROW_GAP = 74;
 const COLUMN_GAP = 28;
 const VIEWBOX_PADDING = 54;
 
-function edgeKey(edge) {
-  return `${edge.source}|${edge.predicate}|${edge.target}`;
-}
-
-function mergePayloads(base, addition) {
-  if (base.schemaVersion !== addition.schemaVersion) {
-    throw new Error("Graph payload schema versions do not match.");
-  }
-  if (
-    base.release.versionIri &&
-    addition.release.versionIri &&
-    base.release.versionIri !== addition.release.versionIri
-  ) {
-    throw new Error("Graph payload releases do not match.");
-  }
-
-  const nodes = new Map(
-    base.nodes.map((node) => [
-      node.id,
-      {
-        ...node,
-        roles: new Set(node.roles || [])
-      }
-    ])
-  );
-
-  for (const node of addition.nodes) {
-    const additionRoles = (node.roles || []).filter(
-      (role) => role !== "focal" || node.id === base.focalTerm
-    );
-    const existing = nodes.get(node.id);
-    if (existing) {
-      for (const role of additionRoles) existing.roles.add(role);
-    } else {
-      nodes.set(node.id, { ...node, roles: new Set(additionRoles) });
-    }
-  }
-
-  const edges = new Map(base.edges.map((edge) => [edgeKey(edge), edge]));
-  for (const edge of addition.edges) edges.set(edgeKey(edge), edge);
-
-  return {
-    ...base,
-    nodes: [...nodes.values()]
-      .map((node) => ({ ...node, roles: [...node.roles].sort() }))
-      .sort((a, b) => a.id.localeCompare(b.id)),
-    edges: [...edges.values()].sort((a, b) => edgeKey(a).localeCompare(edgeKey(b)))
-  };
-}
-
 function wrapLabel(label, maxCharacters = 30) {
   if (label.length <= maxCharacters) return [label];
 
@@ -115,8 +65,8 @@ function assignLevels(payload, visibleEdges, visibleNodeIds) {
   return levels;
 }
 
-function buildLayout(payload, enabledPredicates = new Set(payload.edges.map((edge) => edge.predicate))) {
-  const visibleEdges = payload.edges.filter((edge) => enabledPredicates.has(edge.predicate));
+function buildLayout(payload) {
+  const visibleEdges = payload.edges;
   const visibleNodeIds = new Set([payload.focalTerm]);
   for (const edge of visibleEdges) {
     visibleNodeIds.add(edge.source);
@@ -237,94 +187,43 @@ function edgeEndpoints(source, target) {
   };
 }
 
-function createGraphControls(section, state) {
-  const controls = document.createElement("div");
-  controls.className = "graph-controls";
-  controls.setAttribute("aria-label", "Ontology graph controls");
-
-  const viewControls = document.createElement("div");
-  viewControls.className = "graph-control-group";
-  viewControls.setAttribute("aria-label", "Graph view");
-
-  for (const [label, action] of [
-    ["Zoom in", "zoom-in"],
-    ["Zoom out", "zoom-out"],
-    ["Fit graph", "fit"]
-  ]) {
+function createGraphControls(state) {
+  const actionButton = (label, action, text = label) => {
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.graphAction = action;
-    button.textContent = label;
-    viewControls.appendChild(button);
-  }
+    button.setAttribute("aria-label", label);
+    button.title = label;
+    button.textContent = text;
+    return button;
+  };
 
-  const expansion = document.createElement("div");
-  expansion.className = "graph-control-group graph-expansion";
-  const selectLabel = document.createElement("label");
-  selectLabel.textContent = "Selected term";
-  const select = document.createElement("select");
-  select.dataset.graphNodeSelect = "";
-  selectLabel.appendChild(select);
-  const expandButton = document.createElement("button");
-  expandButton.type = "button";
-  expandButton.dataset.graphAction = "expand";
-  expandButton.textContent = "Expand one level";
-  expansion.append(selectLabel, expandButton);
-
-  const filters = document.createElement("fieldset");
-  filters.className = "graph-filters";
-  filters.dataset.graphFilters = "";
-  const legend = document.createElement("legend");
-  legend.textContent = "Relationships";
-  filters.appendChild(legend);
-
-  const status = document.createElement("p");
-  status.className = "graph-status muted";
-  status.dataset.graphStatus = "";
-  status.setAttribute("aria-live", "polite");
-
-  controls.append(viewControls, expansion, filters, status);
-  section.insertBefore(controls, section.querySelector(".dag-figure"));
-  state.controls = { root: controls, select, expandButton, filters, status };
-}
-
-function updateControls(state) {
-  const { select, expandButton, filters, status } = state.controls;
-  const previousSelection = state.selectedId;
-  select.replaceChildren();
-
-  for (const node of state.payload.nodes) {
-    const option = document.createElement("option");
-    option.value = node.id;
-    option.textContent = `${node.id} — ${node.label}`;
-    select.appendChild(option);
-  }
-  select.value = state.payload.nodes.some((node) => node.id === previousSelection)
-    ? previousSelection
-    : state.payload.focalTerm;
-  state.selectedId = select.value;
-  expandButton.disabled = state.expandedIds.has(state.selectedId);
-
-  const predicates = [...new Set(state.payload.edges.map((edge) => edge.predicate))].sort();
-  for (const predicate of predicates) {
-    if (!state.enabledPredicates.has(predicate)) state.enabledPredicates.add(predicate);
-  }
-  filters.replaceChildren();
-  const legend = document.createElement("legend");
-  legend.textContent = "Relationships";
-  filters.appendChild(legend);
-
-  for (const predicate of predicates) {
-    const label = document.createElement("label");
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.value = predicate;
-    input.checked = state.enabledPredicates.has(predicate);
-    label.append(input, ` ${predicate.replaceAll("_", " ")}`);
-    filters.appendChild(label);
-  }
-
-  status.textContent = `${state.payload.nodes.length} loaded terms; ${state.payload.edges.length} relationships.`;
+  const viewport = document.createElement("div");
+  viewport.className = "graph-viewport";
+  const fallback = state.figure.querySelector(".dag-svg");
+  fallback.replaceWith(viewport);
+  viewport.appendChild(fallback);
+  const zoomControls = document.createElement("div");
+  zoomControls.className = "graph-zoom-controls";
+  zoomControls.setAttribute("role", "group");
+  zoomControls.setAttribute("aria-label", "Graph view");
+  const fitButton = actionButton("Fit graph", "fit", "");
+  const fitIcon = svgElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false" });
+  fitIcon.appendChild(svgElement("path", {
+    d: "M4 10V4h6M14 20h6v-6",
+    fill: "none",
+    stroke: "currentColor",
+    "stroke-width": 2,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round"
+  }));
+  fitButton.appendChild(fitIcon);
+  zoomControls.append(
+    actionButton("Zoom in", "zoom-in", "+"),
+    actionButton("Zoom out", "zoom-out", "−"),
+    fitButton
+  );
+  viewport.prepend(zoomControls);
 }
 
 function setViewBox(state, viewBox) {
@@ -336,7 +235,7 @@ function setViewBox(state, viewBox) {
 }
 
 function renderGraph(state) {
-  const layout = buildLayout(state.payload, state.enabledPredicates);
+  const layout = buildLayout(state.payload);
   const svg = svgElement("svg", {
     class: "dag-svg interactive-dag",
     role: "img",
@@ -352,7 +251,7 @@ function renderGraph(state) {
     id: `interactive-desc-${state.payload.focalTerm.replace(":", "_")}`
   });
   desc.textContent =
-    "Use the graph controls to filter relationships, zoom, pan, and expand a selected term. Each graph node links to its canonical term page.";
+    "Use the plus and minus buttons to zoom, the fit button to show the whole graph, and drag the background to pan. Each graph node links to its canonical term page.";
 
   const defs = svgElement("defs");
   const marker = svgElement("marker", {
@@ -390,8 +289,8 @@ function renderGraph(state) {
   const nodeLayer = svgElement("g", { class: "graph-node-layer" });
   for (const node of layout.nodes) {
     const link = svgElement("a", {
-      href: node.url,
-      class: `dag-node interactive-node${node.id === state.payload.focalTerm ? " is-current" : ""}${node.id === state.selectedId ? " is-selected" : ""}`,
+      href: new URL(node.url.replace(/^\//, ""), new URL("../../", state.payloadDirectory)).href,
+      class: `dag-node interactive-node${node.id === state.payload.focalTerm ? " is-current" : ""}`,
       "data-node-id": node.id,
       "aria-label": `${node.id} ${node.label}. Open term page.`
     });
@@ -422,7 +321,7 @@ function renderGraph(state) {
   }
 
   svg.append(edgeLayer, nodeLayer);
-  state.figure.querySelector("svg")?.replaceWith(svg);
+  state.figure.querySelector(".dag-svg")?.replaceWith(svg);
   state.svg = svg;
   state.layout = layout;
   setViewBox(state, layout.viewBox);
@@ -467,14 +366,9 @@ function zoom(state, factor) {
 
 function bindGraphInteractions(state) {
   for (const node of state.svg.querySelectorAll("[data-node-id]")) {
-    const selectNode = () => {
-      state.selectedId = node.dataset.nodeId;
-      state.controls.select.value = state.selectedId;
-      state.controls.expandButton.disabled = state.expandedIds.has(state.selectedId);
-      highlightNeighborhood(state, state.selectedId);
-    };
-    node.addEventListener("mouseenter", selectNode);
-    node.addEventListener("focus", selectNode);
+    const highlightNode = () => highlightNeighborhood(state, node.dataset.nodeId);
+    node.addEventListener("mouseenter", highlightNode);
+    node.addEventListener("focus", highlightNode);
     node.addEventListener("mouseleave", () => clearHighlight(state));
     node.addEventListener("blur", () => clearHighlight(state));
   }
@@ -506,69 +400,21 @@ function bindGraphInteractions(state) {
   };
   state.svg.addEventListener("pointerup", stopPanning);
   state.svg.addEventListener("pointercancel", stopPanning);
-  state.svg.addEventListener(
-    "wheel",
-    (event) => {
-      event.preventDefault();
-      zoom(state, event.deltaY < 0 ? 0.88 : 1.14);
-    },
-    { passive: false }
-  );
-}
-
-function termPayloadUrl(id, directory) {
-  // Prefix the relative filename so an SO: identifier is not a URL scheme.
-  return new URL("./" + id + ".json", directory);
-}
-
-async function expandSelected(state) {
-  const id = state.selectedId;
-  if (!id || state.expandedIds.has(id)) return;
-  state.controls.expandButton.disabled = true;
-  state.controls.status.textContent = `Loading the neighborhood for ${id}…`;
-
-  try {
-    const response = await fetch(termPayloadUrl(id, state.payloadDirectory));
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const addition = await response.json();
-    state.payload = mergePayloads(state.payload, addition);
-    state.expandedIds.add(id);
-    updateControls(state);
-    renderGraph(state);
-    state.controls.status.textContent = `Expanded ${id}. ${state.payload.nodes.length} terms are now loaded.`;
-  } catch {
-    state.controls.expandButton.disabled = false;
-    state.controls.status.textContent = `The neighborhood for ${id} could not be loaded.`;
-  }
 }
 
 function bindControlInteractions(state) {
-  state.controls.root.addEventListener("click", (event) => {
+  state.section.addEventListener("click", (event) => {
     const button = event.target.closest("[data-graph-action]");
     if (!button) return;
     if (button.dataset.graphAction === "zoom-in") zoom(state, 0.8);
     if (button.dataset.graphAction === "zoom-out") zoom(state, 1.25);
     if (button.dataset.graphAction === "fit") setViewBox(state, state.layout.viewBox);
-    if (button.dataset.graphAction === "expand") expandSelected(state);
-  });
-
-  state.controls.select.addEventListener("change", () => {
-    state.selectedId = state.controls.select.value;
-    state.controls.expandButton.disabled = state.expandedIds.has(state.selectedId);
-    renderGraph(state);
-  });
-
-  state.controls.filters.addEventListener("change", (event) => {
-    if (!(event.target instanceof HTMLInputElement)) return;
-    if (event.target.checked) state.enabledPredicates.add(event.target.value);
-    else state.enabledPredicates.delete(event.target.value);
-    renderGraph(state);
   });
 }
 
-async function enhanceGraph(section) {
+async function enhanceGraph(section, { signal } = {}) {
   const sourceUrl = new URL(section.dataset.graphSrc, document.baseURI);
-  const response = await fetch(sourceUrl);
+  const response = await fetch(sourceUrl, { signal });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const payload = await response.json();
   const figure = section.querySelector(".dag-figure");
@@ -579,29 +425,31 @@ async function enhanceGraph(section) {
     figure,
     payload,
     payloadDirectory: new URL("./", sourceUrl),
-    selectedId: payload.focalTerm,
-    expandedIds: new Set([payload.focalTerm]),
-    enabledPredicates: new Set(payload.edges.map((edge) => edge.predicate)),
-    controls: null,
     svg: null,
     layout: null,
     currentViewBox: null
   };
 
-  createGraphControls(section, state);
-  updateControls(state);
+  createGraphControls(state);
   renderGraph(state);
   bindControlInteractions(state);
   figure.querySelector("figcaption").textContent =
-    "Interactive local ontology graph. Nodes open term pages; controls support filtering, zooming, panning, and one-level expansion.";
+    "Use + and − to zoom, the corner icon to fit the whole graph, or drag the background to pan. Select a node to open its term page.";
 }
 
-if (typeof document !== "undefined") {
-  for (const section of document.querySelectorAll("[data-graph-src]")) {
-    enhanceGraph(section).catch(() => {
-      section.dataset.graphEnhancement = "failed";
-    });
-  }
+const enhancements = new WeakMap();
+
+export function enhanceGraphs(root, options) {
+  return Promise.all([...root.querySelectorAll("[data-graph-src]")].map((section) => {
+    if (!enhancements.has(section)) {
+      enhancements.set(section, enhanceGraph(section, options).catch(() => {
+        section.dataset.graphEnhancement = "failed";
+      }));
+    }
+    return enhancements.get(section);
+  }));
 }
 
-export { buildLayout, mergePayloads, termPayloadUrl };
+if (typeof document !== "undefined") enhanceGraphs(document);
+
+export { buildLayout };

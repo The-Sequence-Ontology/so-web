@@ -1,34 +1,41 @@
 ---
 layout: layouts/base.njk
 ---
-<section class="card">
-  <p class="kicker">{{ kicker }}</p>
-  <h2>{{ heading }}</h2>
-  <p class="lede">{{ introduction }}</p>
-  <div class="search-box">
-    {% for action in actions %}
-    <a class="button" href="{{ action.url | href(page.url) }}">{{ action.label }}</a>
-    {% endfor %}
-  </div>
-</section>
-<section class="grid two" aria-label="Highlights">
-  <article class="card">
-    <h2>{{ snapshotHeading }}</h2>
-    <p><strong>Ontology IRI:</strong> {{ ontology.metadata.ontologyIri or "Unavailable" }}</p>
-    <p><strong>Version IRI:</strong> {{ ontology.metadata.versionIri or "Unavailable" }}</p>
-    <p><strong>Release date:</strong> {{ ontology.metadata.releaseDate or "Unavailable" }}</p>
-    <p><strong>Classes:</strong> {{ ontology.metrics["NUMBER_OF_CLASSES.INCLUDE_IMPORT_CLOSURE=false"] or "Unavailable" }}</p>
+<div class="home-layout">
+  <article class="card home-intro">
+    {# All homepage prose stays editable in src/pages/index.md. #}
+    <div class="home-prose">{{ content | safe }}</div>
+    <div class="search-box home-actions">
+      {% for action in actions %}
+      <a class="button" href="{{ action.url | href(page.url) }}">{{ action.label }}</a>
+      {% endfor %}
+    </div>
   </article>
-  <article class="card">
-    <h2>{{ prioritiesHeading }}</h2>
-    {{ content | safe }}
-  </article>
-</section>
-<section class="card">
-  <h2>{{ entriesHeading }}</h2>
-  <ul class="link-list">
-    {% for term in site.featuredTermIds | featuredTerms(ontology.terms) %}
-    <li><a href="{{ term.canonicalUrl | href(page.url) }}">{{ term.id }} - {{ term.label }}</a></li>
-    {% endfor %}
-  </ul>
-</section>
+  <aside class="home-sidebar" aria-label="Ontology resources">
+    <section class="card home-release">
+      <h2>{{ snapshotHeading }}</h2>
+      <dl class="release-facts">
+        <div><dt>Ontology IRI</dt><dd>{{ ontology.metadata.ontologyIri or "Unavailable" }}</dd></div>
+        <div><dt>Version IRI</dt><dd>{{ ontology.metadata.versionIri or "Unavailable" }}</dd></div>
+        <div><dt>Release date</dt><dd>{{ ontology.metadata.releaseDate or "Unavailable" }}</dd></div>
+        <div><dt>Classes</dt><dd>{{ ontology.metrics["NUMBER_OF_CLASSES.INCLUDE_IMPORT_CLOSURE=false"] or "Unavailable" }}</dd></div>
+      </dl>
+    </section>
+    <section class="card home-entry-points">
+      <h2>{{ entriesHeading }}</h2>
+      <ul class="link-list">
+        {% for term in site.featuredTermIds | featuredTerms(ontology.terms) %}
+        <li>
+          <a href="{{ term.canonicalUrl | href(page.url) }}">
+            <span class="entry-point-copy">
+              <span class="entry-point-id">{{ term.id }}</span>
+              <span class="entry-point-label">{{ term.label }}</span>
+            </span>
+            <span class="entry-point-arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+  </aside>
+</div>

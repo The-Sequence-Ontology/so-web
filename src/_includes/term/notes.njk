@@ -1,0 +1,11 @@
+{% if term.comments.length or term.definition.xrefs.length %}
+<section class="card term-notes">
+  <h3>Comments and references</h3>
+  {% if term.comments.length %}
+  <div>{% for comment in term.comments %}<p>{{ comment }}</p>{% endfor %}</div>
+  {% endif %}
+  {% if term.definition.xrefs.length %}
+  <p><strong>Definition references:</strong> {{ term.definition.xrefs | join(", ") }}</p>
+  {% endif %}
+</section>
+{% endif %}

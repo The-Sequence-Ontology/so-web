@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1000 1000">
+  <!-- Generator: Adobe Illustrator 30.8.2, SVG Export Plug-In . SVG Version: 2.1.4 Build 7)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke: #7549a8;
+      }
+
+      .st0, .st1, .st2, .st3, .st4 {
+        fill: none;
+        stroke-linecap: round;
+      }
+
+      .st0, .st3, .st4 {
+        stroke-dasharray: 1 20;
+        stroke-width: 10px;
+      }
+
+      .st1 {
+        stroke-width: 17px;
+      }
+
+      .st1, .st2 {
+        stroke: #092f52;
+      }
+
+      .st5 {
+        fill: #08af9b;
+      }
+
+      .st2 {
+        stroke-linejoin: round;
+        stroke-width: 15px;
+      }
+
+      .st6 {
+        fill: #f2aa08;
+      }
+
+      .st7 {
+        fill: #ada9e2;
+      }
+
+      .st3 {
+        stroke: #08af9b;
+      }
+
+      .st8 {
+        fill: #7549a8;
+      }
+
+      .st4 {
+        stroke: #ada9e2;
+      }
+    </style>
+  </defs>
+  <line class="st0" x1="500" y1="635.41" x2="500" y2="678.41"/>
+  <path class="st2" d="M500,224.91c-5,61-152,41-240,82"/>
+  <path class="st2" d="M500,224.91v87"/>
+  <path class="st2" d="M500,224.91c5,61,152,41,240,82"/>
+  <circle class="st6" cx="500" cy="195.91" r="61"/>
+  <circle class="st5" cx="260" cy="362.91" r="59"/>
+  <circle class="st8" cx="500" cy="362.91" r="59"/>
+  <circle class="st7" cx="740" cy="362.91" r="59"/>
+  <path class="st1" d="M132,534.91h736"/>
+  <path class="st1" d="M132,656.91h736"/>
+  <path class="st3" d="M260,422.91v73M260,573.91v43"/>
+  <path class="st0" d="M500,422.91v73M500,573.91v43"/>
+  <path class="st4" d="M740,422.91v73M740,573.91v43"/>
+  <rect class="st5" x="187" y="495.91" width="146" height="78" rx="16" ry="16"/>
+  <rect class="st8" x="410" y="495.91" width="180" height="78" rx="16" ry="16"/>
+  <rect class="st7" x="682" y="495.91" width="116" height="78" rx="16" ry="16"/>
+  <rect class="st5" x="187" y="616.91" width="146" height="80" rx="16" ry="16"/>
+  <rect class="st7" x="682" y="616.91" width="116" height="80" rx="16" ry="16"/>
+  <path class="st1" d="M132,779.91h736"/>
+  <rect class="st5" x="187" y="739.91" width="146" height="80" rx="16" ry="16"/>
+  <rect class="st8" x="410" y="739.91" width="389" height="80" rx="16" ry="16"/>
+  <line class="st3" x1="260" y1="696.91" x2="260" y2="739.91"/>
+  <line class="st0" x1="500" y1="696.91" x2="500" y2="739.91"/>
+</svg>

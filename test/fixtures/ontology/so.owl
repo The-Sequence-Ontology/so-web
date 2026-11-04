@@ -12,6 +12,13 @@
     <obo:IAO_0000115>A root feature.</obo:IAO_0000115>
   </owl:Class>
   <owl:Class rdf:about="http://purl.obolibrary.org/obo/SO_0000704">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://purl.obolibrary.org/obo/SO_0000110"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
     <oboInOwl:id>SO:0000704</oboInOwl:id>
     <rdfs:label>gene &lt;test&gt; &amp; &quot;quoted&quot;</rdfs:label>
     <obo:IAO_0000115>A gene with &lt;script&gt;unsafe&lt;/script&gt; text &amp; quotes.</obo:IAO_0000115>

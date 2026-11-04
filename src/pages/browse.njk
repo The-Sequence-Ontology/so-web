@@ -2,14 +2,26 @@
 layout: layouts/base.njk
 permalink: /browser/current_release/index.html
 title: Current Release Browse
+browserPage: true
 ---
-<p class="breadcrumbs"><a href="{{ '/index.html' | href(page.url) }}">Home</a> / Current release</p>
-<section class="card">
-  <h2>Browse the current release</h2>
-  <p class="lede">This entry page links into representative top-level terms from the current release. Search remains the fastest path for most users.</p>
-  <ul class="link-list">
-    {% for term in ontology.topLevelTerms %}
-    <li><a href="{{ term.canonicalUrl | href(page.url) }}">{{ term.id }} - {{ term.label }}</a></li>
-    {% endfor %}
-  </ul>
-</section>
+<p class="breadcrumbs" data-browser-breadcrumbs><a href="{{ '/index.html' | href(page.url) }}">Home</a> / Current release</p>
+{% include "term-notice.njk" %}
+<div class="ontology-browser" data-ontology-browser data-term-base="{{ '/browser/current_release/term/' | href(page.url) }}">
+  {% include "ontology-sidebar.njk" %}
+  <section class="card browse-intro" id="term-details" data-browser-content tabindex="-1">
+    <p class="kicker">Explore the ontology</p>
+    <h2>Browse the current release</h2>
+    <p class="lede">Follow the hierarchy to explore sequence features, attributes, variants, and collections. Select a term to read its definition and relationships.</p>
+    <p>Use the arrows beside a term to show or hide its subclasses. Terms with more than one parent appear in each relevant branch. Obsolete terms are grouped separately at the end of the hierarchy.</p>
+    <h3>Start with a top-level term</h3>
+    <ul class="browse-root-links" role="list">
+      {% for id in ontology.hierarchy.roots %}
+      {% set entry = ontology.hierarchy.nodes[id] %}
+      <li><a href="{{ entry.url | href(page.url) }}"><span>{{ entry.label }}</span><span class="ontology-tree-id">{{ entry.id }}</span></a></li>
+      {% endfor %}
+    </ul>
+    <p class="muted">Looking for a specific name or ID? <a href="{{ '/browser/current_release/search/' | href(page.url) }}">Search the ontology</a>.</p>
+  </section>
+</div>
+<script src="{{ '/assets/ontology-tree.js' | href(page.url) }}" type="module"></script>
+<script src="{{ '/assets/browser-navigation.js' | href(page.url) }}" type="module"></script>

@@ -1,5 +1,4 @@
 <section class="card" data-graph-term="{{ term.id }}" data-graph-src="{{ ('/assets/terms/' + term.id + '.json') | href(page.url) }}">
-  <h3>Ontology DAG neighborhood</h3>
-  <p class="muted">Informative diagram with linked parent, child, and related nodes. The surrounding text provides the same relationship content in accessible list form.</p>
+  <h3>Ontology neighborhood diagram</h3>
   {{ term | dagSvg(ontology.termLookup) | safe }}
 </section>

@@ -62,11 +62,12 @@ This serves the existing files and does not rebuild them after edits. Run only o
 | --- | --- | --- |
 | Build runtime | Node.js 24, JavaScript ES modules | Runs the scripts and ontology processing; `.mjs` files and `"type": "module"` use `import`/`export` |
 | Dependency management | npm and `package-lock.json` | Installs a reproducible dependency tree; normal setup uses `npm ci` |
-| Static site generator | `@11ty/eleventy` **3.1.8** | The sole direct npm dependency, installed as a development dependency and pinned to an exact version |
+| Static site generator | `@11ty/eleventy` **3.1.8** | Generates the HTML pages; installed as a development dependency and pinned to an exact version |
+| Ontology XML reader | `htmlparser2` **7.2.0**, in XML mode | Reads nested RDF/XML class structures and their annotations during data preparation; pinned as a direct development dependency |
 | Written content | Markdown with YAML front matter | Keeps prose and page settings in files that can be edited directly |
 | Templates | Nunjucks, provided through Eleventy | Renders HTML layouts, includes, loops, conditions, and data placeholders |
 | Site settings | JSON files under `src/_data/` | Stores navigation, masthead text, and featured term IDs |
-| Styling | Custom plain CSS and system fonts | Supplies the existing design; there is no separate theme or CSS compilation step |
+| Styling | Custom plain CSS, self-hosted Space Grotesk and Source Sans 3 | Supplies the teal-and-cream design with light neo-Memphis accents; no external theme or CSS compilation step |
 | Browser behavior | Plain JavaScript ES modules, Fetch API, and SVG | Provides client-side search and interactive graph controls |
 | Scientific inputs | OWL/XML, ontology graph JSON, and release metrics | Supplies term annotations, topology, and release information |
 | History | Local Git commands and a generated JSON cache | Reconstructs best-effort semantic changes from the editable ontology history |
@@ -92,7 +93,8 @@ src/
     header.njk                 Shared masthead and navigation
     footer.njk                 Shared footer
   _data/                       Authored site settings and prepared ontology data loader
-  assets/                      Custom stylesheet, search script, and graph script
+  assets/                      Stylesheet, logo, decorative SVG, and browser scripts
+    fonts/                     Self-hosted WOFF2 fonts, font-face CSS, and licenses
 lib/                           Ontology processing, graph rendering, and shared helpers
 scripts/                       Data preparation, clean builds, and local preview
 test/                          Automated tests and a small fixture ontology
@@ -108,9 +110,10 @@ node_modules/                  Installed build dependencies
 
 | Component | Source | Responsibility |
 | --- | --- | --- |
-| Homepage | [src/pages/index.md](src/pages/index.md) and [home layout](src/_includes/layouts/home.njk) | Authored introduction, action buttons, priorities, generated release snapshot, and featured terms |
+| Homepage | [src/pages/index.md](src/pages/index.md) and [home layout](src/_includes/layouts/home.njk) | Markdown overview, introduction, participation links, action buttons, generated release snapshot, and featured terms |
 | About page | [src/pages/about.md](src/pages/about.md) | Written project information |
 | Browse, search, and release pages | [browse.njk](src/pages/browse.njk), [search.njk](src/pages/search.njk), [release.njk](src/pages/release.njk) | HTML for the main browser entry points and release downloads |
+| Ontology hierarchy sidebar | [ontology-sidebar.njk](src/_includes/ontology-sidebar.njk) and [ontology-tree.js](src/assets/ontology-tree.js) | Expandable term links shared by Browse and term pages |
 | Document shell | [base.njk](src/_includes/layouts/base.njk) | HTML document, title, stylesheet, header, main area, and footer |
 | Written-page layout | [content.njk](src/_includes/layouts/content.njk) | Breadcrumbs and the card around a Markdown page's content |
 | Shared header and footer | [header.njk](src/_includes/header.njk), [footer.njk](src/_includes/footer.njk) | Elements shared by every main page |
@@ -141,12 +144,13 @@ These modules keep the processing separate from page markup:
 | [lib/ontology.mjs](lib/ontology.mjs) | Parses annotations and metadata, indexes relationships, normalizes terms, and creates searchable text |
 | [lib/history.mjs](lib/history.mjs) | Extracts and caches Git-era semantic events; earlier history is not reconstructed automatically |
 | [lib/site-data.mjs](lib/site-data.mjs) | Resolves relationship labels and links and prepares browse entries, term records, and redirects |
+| [lib/ontology-tree.mjs](lib/ontology-tree.mjs) | Prepares the hierarchy's roots and parent/child links without duplicating multiply inherited terms |
 | [lib/graph-payload.mjs](lib/graph-payload.mjs) | Builds the public graph JSON contract independently of HTML templates |
 | [lib/graph-svg.mjs](lib/graph-svg.mjs) | Renders the linked static SVG fallback |
 | [lib/shared.mjs](lib/shared.mjs) | Supplies escaping, identifier conversion, canonical term paths, and relative-link helpers |
 | [lib/build-paths.mjs](lib/build-paths.mjs) | Resolves input/cache locations and restricts which output directories may be cleaned |
 
-The prepared snapshot records input fingerprints, a processing version fingerprint, and the history mode. Full history is cached against the ontology Git revision and history-cache format. Prepared data is published after its public files are ready, allowing the preview server to reload a consistent set.
+The prepared snapshot records input fingerprints, a processing version fingerprint (including the dependency lockfile), and the history mode. Full history is cached against the ontology Git revision and history-cache format. Prepared data is published after its public files are ready, allowing the preview server to reload a consistent set.
 
 ### Generated term pages and redirects
 
@@ -154,13 +158,27 @@ The prepared snapshot records input fingerprints, a processing version fingerpri
 
 Term URLs retain the form `/browser/current_release/term/SO:NNNNNNN/`. The [redirect template](src/pages/redirects.njk) preserves compact IDs such as `SO_NNNNNNN` and alternate-ID destinations. Some release identifiers are both OWL classes and alternate IDs; their existing redirect precedence is preserved. Keep colons and trailing slashes when editing term routing.
 
-### Search, graphs, and styling
+### Hierarchy, search, graphs, and styling
 
-[search.js](src/assets/search.js) loads `assets/search-index.json` and filters prepared search text in the browser. The text includes IDs, compact IDs, labels, definitions, synonyms, and alternate IDs. The current implementation uses substring matching, shows up to 50 results, and keeps the query in the page's `?q=` URL parameter.
+The Browse page and every term record share [ontology-sidebar.njk](src/_includes/ontology-sidebar.njk). [ontology-tree.js](src/assets/ontology-tree.js) loads `assets/ontology-tree.json` and adds expandable nested term links. The nesting follows `is_a`, with alphabetical siblings; other relationship types remain in each term's relationships and DAG. A term with multiple parents appears under each parent. Obsolete terms have their own group.
 
-[graph.js](src/assets/graph.js) loads a term's `assets/terms/SO:NNNNNNN.json` payload and replaces its static SVG with an interactive view. It provides highlighting, relationship filters, zoom, pan, fit, node links, and one-level expansion by fetching another term payload. `assets/graph-manifest.json` describes the release and payload layout. Payloads retain predicates, node roles, canonical URLs, and semantic edge direction: `is_a` points from child to parent.
+The hierarchy opens a path to the current term and highlights its link. Expanded branches persist in browser session storage while navigating between records. The hierarchy grows down the document as terms expand, using the page's normal scrollbar. On narrow screens the sidebar moves above the record and starts collapsed on term pages; its heading opens it. Branches are rendered as needed, keeping large hierarchies manageable. Without JavaScript, top-level links and each record's parent/child lists remain available. The hierarchy JSON is rendered by [ontology-tree.njk](src/pages/ontology-tree.njk) from the prepared data during every Eleventy build; ordinary template edits do not require refreshing scientific data.
 
-[styles.css](src/assets/styles.css) controls the whole visual design. The `:root` variables define the main colors, borders, shadows, and radius; later rules style the masthead, cards, tables, search results, and graphs. The system font stack requires no font download.
+On a new Browse visit, `sequence_feature` starts expanded and other roots start collapsed. The sidebar stays in the normal page flow, and deep branches wrap their labels to fit its width.
+
+[browser-navigation.js](src/assets/browser-navigation.js) loads term records into the existing Browse/term layout while preserving the hierarchy and the reader's page position. The URL and browser-tab title update to the selected term, and Back/Forward restore previous records and positions. A dismissible notice at the top announces the loaded term and offers "Go to top" to move to the new content. The loaded-term notice clears when you select "Go to top" or scroll back to the top of the page, and stays hidden if you are already at the top when the term loads. Normal links remain available for new tabs, bookmarks, and use without JavaScript. Static alternate-ID redirects are resolved to their destination records. The [notice include](src/_includes/term-notice.njk) contains its controls; the browser script supplies status messages. A failed request keeps the previous record and offers an ordinary page link.
+
+[search.js](src/assets/search.js) loads `assets/search-index.json` and displays results ranked by [search-ranking.js](src/assets/search-ranking.js). Exact canonical, compact, or alternate IDs come first, followed by exact labels, exact synonyms, label prefixes, partial labels, partial synonyms, and other substring matches (including definitions). Matching ignores case and surrounding whitespace. All matches are ranked before displaying up to 50; the summary reports the full count and says when results are capped. The query stays in the page's `?q=` URL parameter.
+
+Exact ID, label, and synonym matches have a pale amber background, a bold title, and an "Exact match" badge. Highlighting uses the same matching rules as ranking.
+
+[graph.js](src/assets/graph.js) loads a term's `assets/terms/SO:NNNNNNN.json` payload and replaces its static SVG with an interactive view. It shows the term's neighborhood with highlighting, zoom, pan, fit, and linked nodes. All relationship types in that neighborhood are displayed. `assets/graph-manifest.json` describes the release and payload layout. Payloads retain predicates, node roles, canonical URLs, and semantic edge direction: `is_a` points from child to parent.
+
+Use the **+ / − buttons in the graph's upper-right corner** to zoom. The opposing-corners icon below them fits the whole graph in view; its tooltip and accessible label say **Fit graph**. Mouse-wheel and trackpad scrolling over the graph scroll the page. Dragging the graph background pans the view.
+
+[styles.css](src/assets/styles.css) controls the whole visual design. The `:root` variables define the main colors, borders, shadows, radius, and font families; commented sections style the masthead, homepage, term records, search, and graphs. Light paper texture, geometric accents, and offset shadows add a neo-Memphis touch while keeping scientific content readable. The homepage uses a main reading column and a resource sidebar on wide screens, then stacks the cards on narrow screens.
+
+Headings and navigation use **Space Grotesk**; prose and controls use **Source Sans 3**. Term IDs use a system monospace font. Font files and their open licenses live in [src/assets/fonts/](src/assets/fonts/README.md); the browser loads them from this website, with system fallbacks if unavailable. There are no runtime requests to Google Fonts. The shared header's decorative neo-Memphis bent arrow, ring, bar, and double helix live in [memphis-motif.svg](src/assets/memphis-motif.svg). Their size and position are set by `.masthead::after` in the stylesheet, using the masthead's shared padding variables to balance the spacing with the logo.
 
 The build also publishes `assets/metadata.json` and copies all three source release files to `downloads/`. There is no OWL parsing in the browser.
 
@@ -194,7 +212,7 @@ Save and check the preview. Use ordinary Markdown for headings, paragraphs, list
 
 ### Update the homepage or HTML-based pages
 
-The [homepage](src/pages/index.md) stores its heading, introduction, buttons, and section labels in front matter. The Markdown body supplies the priorities list. Change those values for content edits; change [home.njk](src/_includes/layouts/home.njk) to rearrange the blocks.
+The [homepage](src/pages/index.md) stores its browser-tab title, buttons, and generated-section labels in front matter. All page prose, including the welcome heading, introduction, uses list, and participation links, is ordinary Markdown below the closing `---`. Edit that body to change what the homepage says; change [home.njk](src/_includes/layouts/home.njk) to rearrange the blocks.
 
 For Browse, Search, or Release, open the matching `.njk` file under `src/pages/`. Edit its headings and prose as HTML. Expressions such as `{{ ontology.metadata.releaseDate }}` insert prepared data; leave them in place when changing only the surrounding wording.
 
@@ -229,12 +247,16 @@ Keep JSON property names and strings in double quotes, with no trailing comma af
 | Change | Where to edit |
 | --- | --- |
 | Site name or masthead description | `src/_data/site.json` |
+| Shared header logo | `src/assets/so_logo.svg`; its URL is the `logo` setting in `src/_data/site.json` |
 | Featured term IDs | The `featuredTermIds` array in `src/_data/site.json` |
 | Navigation wording, order, or destinations | `src/_data/navigation.json` |
 | Shared masthead/footer markup | `src/_includes/header.njk`, `footer.njk` |
 | Arrangement of every term record | `src/_includes/layouts/term.njk` |
 | Relationships, history, or graph section | The matching include under `src/_includes/term/` |
+| Browse introduction or hierarchy heading/help | `src/pages/browse.njk`, `src/_includes/ontology-sidebar.njk` |
 | Colors, spacing, fonts, or responsive rules | `src/assets/styles.css` |
+| Font files, font-face declarations, and licenses | `src/assets/fonts/` |
+| Decorative header shapes | `src/assets/memphis-motif.svg` |
 
 Nunjucks templates are ordinary HTML with placeholders, loops, and conditions. Editing one shared layout updates every page that uses it:
 
@@ -277,7 +299,7 @@ Changes to release files are checked on preview startup. Restarting with changed
 
 Stop the development server before running a clean build: both use the configured output directory, and builds replace its contents. Publish the contents of `dist/` after a completed build, preserving directory indexes and term paths.
 
-The tests use a small fixture ontology, so `npm test` does not require the external ontology checkout. They cover semantic graph directions, payload merging, colon-containing graph URLs, canonical and alias pages, escaping, downloads/assets, cache invalidation, full/fast history behavior, and stale-output cleanup.
+The tests use a small fixture ontology, so `npm test` does not require the external ontology checkout. They cover semantic graph directions, interactive graph layout, canonical and alias pages, escaping, downloads/assets, cache invalidation, full/fast history behavior, and stale-output cleanup.
 
 ## Keep Eleventy up to date
 
@@ -319,7 +341,7 @@ Keep routine Eleventy updates within the **3.x** line. Review a later major vers
 
    With the ontology Git checkout available, also run `npm run build` to verify full history. The real-release builds need the external inputs even though the tests do not.
 
-5. Start `npm run dev` and check the homepage, About, Browse, Release, and Search, plus an ordinary term, an obsolete term, and an alternate-ID URL. Verify search and graph filtering, zoom, fit, expansion, and node navigation. Check desktop and narrow widths, and confirm term relationships and the static graph are available with JavaScript disabled.
+5. Start `npm run dev` and check the homepage, About, Browse, Release, and Search, plus an ordinary term, an obsolete term, and an alternate-ID URL. Verify search and graph zoom, fit, panning, highlighting, and node navigation. Check desktop and narrow widths, and confirm term relationships and the static graph are available with JavaScript disabled.
 6. Review the dependency changes, update the version recorded in this README, and commit `package.json` and `package-lock.json` together with any required source changes. Keep generated directories out of the change.
 
 To roll back an unsuccessful update, restore the dependency-file changes for that update, including any related source changes, then run `npm ci` and rebuild.

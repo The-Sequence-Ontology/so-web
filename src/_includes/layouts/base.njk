@@ -4,9 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ title }}</title>
+    <link rel="preload" href="{{ '/assets/fonts/source-sans-3-latin.woff2' | href(page.url) }}" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="{{ '/assets/fonts/space-grotesk-latin.woff2' | href(page.url) }}" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="{{ '/assets/fonts/fonts.css' | href(page.url) }}" />
     <link rel="stylesheet" href="{{ '/assets/styles.css' | href(page.url) }}" />
   </head>
-  <body>
+  <body{% if browserPage %} class="ontology-browser-page"{% endif %}>
     {% include "header.njk" %}
     <main>
       <div class="shell">{{ content | safe }}</div>

@@ -47,7 +47,7 @@ export async function prepareData({ mode = "full", reuse = false, config = setti
     throw new Error("Cannot read ontology release files in " + ontologyDir +
       ". Set SO_ONTOLOGY_REPO or SO_ONTOLOGY_DIR; the directory must contain " + inputNames.join(", ") + ".", { cause: error });
   }
-  const processorFiles = ["lib/ontology.mjs", "lib/history.mjs", "lib/site-data.mjs", "lib/graph-payload.mjs", "scripts/prepare-data.mjs"];
+  const processorFiles = ["lib/ontology.mjs", "lib/history.mjs", "lib/site-data.mjs", "lib/graph-payload.mjs", "scripts/prepare-data.mjs", "package-lock.json"];
   const processorHash = hash((await Promise.all(processorFiles.map((file) => fs.readFile(path.join(projectRoot, file), "utf8")))).join("\n"));
   const source = {
     directory: ontologyDir,

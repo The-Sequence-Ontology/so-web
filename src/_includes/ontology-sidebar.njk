@@ -1,0 +1,16 @@
+<aside class="ontology-sidebar" data-ontology-tree data-tree-src="{{ '/assets/ontology-tree.json' | href(page.url) }}" data-current-term="{{ term.id if term else '' }}">
+  <details class="card ontology-sidebar-panel" open>
+    <summary><h2>Ontology hierarchy</h2></summary>
+    <p class="ontology-tree-help muted">Expand a branch or open a term. Nesting follows <code>is_a</code> relationships.</p>
+    <nav aria-label="Ontology terms">
+      <ul class="ontology-tree-list" role="list" data-tree-roots>
+        {% for id in ontology.hierarchy.roots %}
+        {% set entry = ontology.hierarchy.nodes[id] %}
+        <li><div class="ontology-tree-row"><a class="ontology-tree-link" href="{{ entry.url | href(page.url) }}"><span>{{ entry.label }}</span><span class="ontology-tree-id">{{ entry.id }}</span></a></div></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    <p class="ontology-tree-status muted" data-tree-status role="status"></p>
+    <noscript><p class="ontology-tree-help muted">Open a term to browse its parent and child links.</p></noscript>
+  </details>
+</aside>

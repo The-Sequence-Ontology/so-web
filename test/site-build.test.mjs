@@ -12,6 +12,7 @@ import { termHistoryCacheVersion } from "../lib/history.mjs";
 
 const run = promisify(execFile);
 const fixture = path.join(projectRoot, "test/fixtures/ontology");
+const site = JSON.parse(await fs.readFile(path.join(projectRoot, "src/_data/site.json"), "utf8"));
 
 test("output cleanup is restricted to generated directories", () => {
   for (const target of ["src", ".", "..", ".cache", "test/fixtures", "../dist"]) {
@@ -39,6 +40,11 @@ test("Eleventy builds fixture pages, aliases, public data, and clean output", as
     assert.match(html, /&lt;script&gt;unsafe&lt;\/script&gt;/);
     assert.doesNotMatch(html, /<script>unsafe/);
     assert.match(html, /dag-figure/);
+    assert.match(html, /data-ontology-tree/);
+    assert.match(html, /data-browser-content data-term-id="SO:0000704"/);
+    assert.match(html, /data-term-notice/);
+    assert.match(html, /data-current-term="SO:0000704"/);
+    assert.match(html, /data-tree-src="..\/..\/..\/..\/assets\/ontology-tree.json"/);
     assert.match(html, /data-graph-src="..\/..\/..\/..\/assets\/terms\/SO:0000704.json"/);
     assert.match(html, /<h4>derives_from \(incoming\)<\/h4>/);
     assert.match(html, /<h4>part_of \(outgoing\)<\/h4>/);
@@ -47,7 +53,7 @@ test("Eleventy builds fixture pages, aliases, public data, and clean output", as
       assert.match(await read(termPath + alias + "/index.html"), /content="0; url=..\/SO:0000704\/"/);
     }
     for (const page of ["index.html", "browser/current_release/index.html", "browser/current_release/about/index.html", "browser/current_release/release/index.html", "browser/current_release/search/index.html"]) {
-      assert.match(await read(page), /Sequence Ontology Browser/);
+      assert.ok((await read(page)).includes(site.name));
     }
     const payload = await json("assets/terms/SO:0000704.json");
     assert.equal(payload.schemaVersion, 1);
@@ -57,7 +63,13 @@ test("Eleventy builds fixture pages, aliases, public data, and clean output", as
     const search = await json("assets/search-index.json");
     assert.ok(search.find((term) => term.id === "SO:0000704").tokens.includes("so:9999999"));
     assert.ok(search.find((term) => term.id === "SO:0000704").tokens.includes("genetic & feature"));
-    for (const asset of ["styles.css", "search.js", "graph.js"]) {
+    const hierarchy = await json("assets/ontology-tree.json");
+    assert.equal(Object.keys(hierarchy.nodes).length, 5);
+    assert.deepEqual(hierarchy.nodes["SO:0000001"].parents, ["SO:0000704", "SO:0000110"]);
+    assert.deepEqual(hierarchy.obsolete, ["SO:0000002"]);
+    assert.equal(hierarchy.nodes["SO:0000704"].label, 'gene <test> & "quoted"');
+    assert.match(await read("browser/current_release/index.html"), /Ontology hierarchy/);
+    for (const asset of ["styles.css", "search.js", "search-ranking.js", "graph.js", "ontology-tree.js", "browser-navigation.js"]) {
       assert.equal(await read("assets/" + asset), await fs.readFile(path.join(projectRoot, "src/assets", asset), "utf8"));
     }
     for (const name of ["so.owl", "so.json", "so-metadata.txt"]) {

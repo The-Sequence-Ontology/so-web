@@ -1,12 +1,20 @@
 <header class="site-header">
   <div class="shell">
     <div class="masthead">
-      <p class="kicker">{{ site.kicker }}</p>
-      <h1>{{ site.name }}</h1>
-      <p>{{ site.description }}</p>
+      <div class="site-branding">
+        {% if site.logo %}
+        <a class="site-logo" href="{{ '/index.html' | href(page.url) }}" aria-label="{{ site.name }} home">
+          <img src="{{ site.logo | href(page.url) }}" alt="" width="1000" height="1000" />
+        </a>
+        {% endif %}
+        <div class="site-branding-copy">
+          <h1>{{ site.name }}</h1>
+          <p>{{ site.description }}</p>
+        </div>
+      </div>
       <nav class="nav" aria-label="Primary">
         {% for item in navigation %}
-        <a href="{{ item.url | href(page.url) }}">{{ item.label }}</a>
+        <a href="{{ item.url | href(page.url) }}"{% if page.url == item.url or (item.url == '/index.html' and page.url == '/') %} aria-current="page"{% endif %}>{{ item.label }}</a>
         {% endfor %}
       </nav>
     </div>

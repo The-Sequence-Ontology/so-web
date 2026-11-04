@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="13 22 220 130" fill="none">
+  <!-- Neo-Memphis bent arrow, ring, bar, and double helix. -->
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M139 48V33h28m-8-8 8 8-8 8" stroke="#f2aa08" stroke-width="5"/>
+    <circle cx="203" cy="89" r="25" stroke="#79c7bc" stroke-width="4"/>
+    <!-- Offset backbones give the schematic unequal major/minor groove spacing. -->
+    <!-- Nudge the rotated helix upward to preserve its bottom buffer. -->
+    <g stroke="#f5ecd6" transform="translate(0 -5) rotate(15 140 133)">
+      <!-- Leave the rounded strand tips open before the first and last base pairs. -->
+      <path d="M110 125.22V143.63 M116 133V142.53 M122 140.78V135.85 M128 144V127.5 M134 140.78V122.37 M140 133V123.47 M146 125.22V130.15 M152 122V138.5 M158 125.22V143.63 M164 133V142.53 M170 140.78V135.85" stroke-width="1.5"/>
+      <path d="M104 122 C108 122 112 127.24 116 133 C120 138.76 124 144 128 144 C132 144 136 138.76 140 133 C144 127.24 148 122 152 122 C156 122 160 127.24 164 133 C168 138.76 172 144 176 144" stroke-width="3"/>
+      <path d="M104 138.5 C106.67 141.83 109.33 144 112 144 C116 144 120 138.76 124 133 C128 127.24 132 122 136 122 C140 122 144 127.24 148 133 C152 138.76 156 144 160 144 C164 144 168 138.76 172 133 C173.33 131.08 174.67 129.16 176 127.5" stroke-width="3"/>
+    </g>
+  </g>
+  <rect x="105" y="69" width="43" height="12" rx="2" fill="#7549a8" transform="translate(-12 0) rotate(-12 126 75)"/>
+</svg>
