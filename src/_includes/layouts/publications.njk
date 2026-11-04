@@ -1,0 +1,63 @@
+---
+layout: layouts/base.njk
+---
+<p class="breadcrumbs"><a href="{{ '/index.html' | href(page.url) }}">Home</a> / {{ breadcrumb }}</p>
+<h2 class="publications-heading">{{ title }}</h2>
+{% set publications = content | publicationData(publicationTypes, publicationContentTypes) %}
+<div class="publications-layout" data-publications>
+  <aside class="card publications-sidebar" aria-label="Publication filters and years">
+    <fieldset class="publication-type-filters" data-publication-filters hidden>
+      <legend>Publication type</legend>
+      <div class="publication-type-options">
+        <label>
+          <input type="checkbox" name="publication-type" value="all" checked />
+          <span>All types</span>
+          <span class="publication-filter-count" data-publication-type-count="all" aria-hidden="true">{{ publications.total }}</span>
+        </label>
+        {% for type in publications.types %}
+        <label>
+          <input type="checkbox" name="publication-type" value="{{ type.value }}" checked />
+          <span>{{ type.label }}</span>
+          <span class="publication-filter-count" data-publication-type-count="{{ type.value }}" aria-hidden="true">{{ type.count }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <fieldset class="publication-type-filters" data-publication-content-filters hidden>
+      <legend>Content type</legend>
+      <div class="publication-type-options">
+        <label>
+          <input type="checkbox" name="publication-content-type" value="all" checked />
+          <span>All content types</span>
+          <span class="publication-filter-count" data-publication-content-type-count="all" aria-hidden="true">{{ publications.total }}</span>
+        </label>
+        {% for type in publications.contentTypes %}
+        <label>
+          <input type="checkbox" name="publication-content-type" value="{{ type.value }}" checked />
+          <span>{{ type.label }}</span>
+          <span class="publication-filter-count" data-publication-content-type-count="{{ type.value }}" aria-hidden="true">{{ type.count }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <p class="visually-hidden" data-publication-status role="status" aria-live="polite" aria-atomic="true"></p>
+    <nav class="publications-year-nav" data-publication-years aria-labelledby="publication-years-heading">
+      <h3 id="publication-years-heading">Year</h3>
+      <ul role="list">
+        {% for entry in publications.years %}
+        <li data-publication-year="{{ entry.year }}">
+          <a href="#{{ entry.id }}" aria-label="{{ entry.year }}: {{ entry.count }} publication{% if entry.count != 1 %}s{% endif %}">
+            <span>{{ entry.year }}</span>
+            <span class="publication-year-count" aria-hidden="true">{{ entry.count }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </aside>
+  <div class="publications-content">
+    {{ publications.html | safe }}
+    <p class="card publications-empty" data-publication-empty hidden>No publications match the selected filters.</p>
+  </div>
+</div>
+<script src="{{ '/assets/publications.js' | href(page.url) }}" type="module"></script>

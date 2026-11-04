@@ -8,7 +8,7 @@ actions:
   - label: Browse sequence features
     url: /browser/current_release/term/SO:0000110/
 snapshotHeading: Current release snapshot
-entriesHeading: Suggested entry points
+entriesHeading: Top-level ontology classes
 ---
 ## Welcome to the Sequence Ontology
 

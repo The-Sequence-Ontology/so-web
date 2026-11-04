@@ -16,7 +16,6 @@ layout: layouts/base.njk
       <h2>{{ snapshotHeading }}</h2>
       <dl class="release-facts">
         <div><dt>Ontology IRI</dt><dd>{{ ontology.metadata.ontologyIri or "Unavailable" }}</dd></div>
-        <div><dt>Version IRI</dt><dd>{{ ontology.metadata.versionIri or "Unavailable" }}</dd></div>
         <div><dt>Release date</dt><dd>{{ ontology.metadata.releaseDate or "Unavailable" }}</dd></div>
         <div><dt>Classes</dt><dd>{{ ontology.metrics["NUMBER_OF_CLASSES.INCLUDE_IMPORT_CLOSURE=false"] or "Unavailable" }}</dd></div>
       </dl>

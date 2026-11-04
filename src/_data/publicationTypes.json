@@ -1,0 +1,5 @@
+[
+  { "value": "journal-article", "label": "Journal article" },
+  { "value": "conference-paper", "label": "Conference paper" },
+  { "value": "poster", "label": "Poster" }
+]

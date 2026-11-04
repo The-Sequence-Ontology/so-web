@@ -1,11 +1,13 @@
 import { settings, outputDirectory } from "./lib/build-paths.mjs";
 import { hrefFrom } from "./lib/shared.mjs";
 import { buildDagSvg } from "./lib/graph-svg.mjs";
+import { publicationData } from "./lib/publications.mjs";
 
 export default function (eleventyConfig) {
   const { snapshotPath, publicDir } = settings();
   eleventyConfig.setNunjucksEnvironmentOptions({ autoescape: true });
   eleventyConfig.addFilter("href", hrefFrom);
+  eleventyConfig.addFilter("publicationData", publicationData);
   eleventyConfig.addFilter("historyType", (type = "") => type.replaceAll("_", " "));
   eleventyConfig.addFilter("featuredTerms", (ids, terms) =>
     ids.map((id) => terms.find((term) => term.id === id)).filter(Boolean));

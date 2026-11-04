@@ -112,6 +112,8 @@ node_modules/                  Installed build dependencies
 | --- | --- | --- |
 | Homepage | [src/pages/index.md](src/pages/index.md) and [home layout](src/_includes/layouts/home.njk) | Markdown overview, introduction, participation links, action buttons, generated release snapshot, and featured terms |
 | About page | [src/pages/about.md](src/pages/about.md) | Written project information |
+| Contact page | [src/pages/contact.md](src/pages/contact.md) | Community issue tracker and email contact information |
+| Publications page | [src/pages/publications.md](src/pages/publications.md) and [publications layout](src/_includes/layouts/publications.njk) | Individual cards with citations, authors, affiliations, abstracts, links, and publication/content type tags; [lib/publications.mjs](lib/publications.mjs) reads `data-year`, `data-type`, and `data-content-type` to generate labels and navigation, and [publications.js](src/assets/publications.js) combines both checkbox filter groups and updates year links |
 | Browse, search, and release pages | [browse.njk](src/pages/browse.njk), [search.njk](src/pages/search.njk), [release.njk](src/pages/release.njk) | HTML for the main browser entry points and release downloads |
 | Ontology hierarchy sidebar | [ontology-sidebar.njk](src/_includes/ontology-sidebar.njk) and [ontology-tree.js](src/assets/ontology-tree.js) | Expandable term links shared by Browse and term pages |
 | Document shell | [base.njk](src/_includes/layouts/base.njk) | HTML document, title, stylesheet, header, main area, and footer |
@@ -192,10 +194,10 @@ Start `npm run dev`, then edit [src/pages/about.md](src/pages/about.md). A writt
 ---
 layout: layouts/content.njk
 permalink: /browser/current_release/about/index.html
-title: About the Prototype
+title: About
 breadcrumb: About
 ---
-## About this prototype
+## About
 
 Write or update a paragraph here.
 

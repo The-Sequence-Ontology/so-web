@@ -2,5 +2,5 @@
   "name": "Sequence Ontology",
   "logo": "/assets/so_logo.svg",
   "description": "A shared vocabulary for biological sequence features and annotations",
-  "featuredTermIds": ["SO:0000110", "SO:0000400", "SO:0000704", "SO:0001411"]
+  "featuredTermIds": ["SO:0000110", "SO:0001060", "SO:0000400", "SO:0001260"]
 }

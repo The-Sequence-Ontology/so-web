@@ -3,5 +3,7 @@
   { "label": "Browse", "url": "/browser/current_release/" },
   { "label": "Search", "url": "/browser/current_release/search/" },
   { "label": "Release", "url": "/browser/current_release/release/" },
-  { "label": "About", "url": "/browser/current_release/about/" }
+  { "label": "Publications", "url": "/browser/current_release/publications/" },
+  { "label": "About", "url": "/browser/current_release/about/" },
+  { "label": "Contact", "url": "/browser/current_release/contact/" }
 ]
